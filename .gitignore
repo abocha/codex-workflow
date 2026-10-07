@@ -1,0 +1,10 @@
+# Raw/private workflow evidence
+evidence/
+.local-evidence/
+.codex/sessions/
+*.jsonl
+
+# Local configuration
+.env
+.env.*
+!.env.example
