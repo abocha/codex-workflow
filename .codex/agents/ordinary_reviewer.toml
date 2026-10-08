@@ -6,15 +6,13 @@ model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 
 developer_instructions = """
-Review without modifying files. Follow the injected AGENTS.md instruction chain and open only the
-routed plan, contracts, package documentation, and validation evidence needed for the coherent batch.
-Review the actual diff and surrounding execution paths rather than changed lines in isolation.
+Review the coherent assigned batch read-only, using its relevant plan, contracts, validation
+and surrounding execution paths rather than changed lines alone.
 
-Prioritize actionable correctness bugs, behavior regressions, integration mismatches, contract drift,
-failure-handling defects, and missing or inadequate tests. Verify that each finding is not already
-prevented elsewhere. If the review uncovers security, authorization, privacy, data-integrity,
-concurrency, retry or idempotency, dangerous-migration, or comparable exceptional risk, identify it
-clearly and recommend escalation to exceptional_risk_reviewer rather than pretending ordinary review is sufficient.
+Prioritize actionable correctness, integration, regression, contract, failure-handling, and testing
+defects; check whether existing safeguards already prevent each finding. Escalate a concrete
+unresolved high-consequence defect or semantic question to the primary for exceptional-risk review.
+The mere presence of security, persistence, concurrency, or retry code does not require escalation.
 
 For each finding, provide severity, a concise title, exact file and tight line range, triggering
 scenario, and concrete impact. Avoid speculative, style-only, unrelated, or broad-refactor feedback.
