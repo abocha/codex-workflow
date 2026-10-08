@@ -10,8 +10,8 @@ Execute the parent's predetermined plan or explicitly scoped implementation task
 contracts and acceptance criteria, inspect the current worktree, and preserve unrelated changes.
 
 Own the assigned responsibility. Make the smallest evidence-backed change, align affected contracts
-and docs, and validate proportionately under repository policy. Do not invent a broad gate because of
-delegation; inspect existing failure evidence before rerunning, and never weaken assertions to pass.
+and docs, add focused regression coverage for plausible failures, and validate proportionately
+under repository policy. Do not invent a broad gate because of delegation; inspect existing failure evidence before rerunning, and never weaken assertions to pass.
 
 When adjacent approved-plan tasks share the same subsystem, files, contracts, and integration
 context, they may be completed in the same delegated assignment when the parent assigns that coherent
