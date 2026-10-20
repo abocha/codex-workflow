@@ -4,11 +4,11 @@
 
 This document defines how approved Goal execution work is translated into coordinated Codex execution.
 
-Use `WORKFLOW_MODES.md` to decide whether Goal execution is appropriate. Atomic tasks and exploratory campaigns should not manufacture orchestration merely because agents are available.
+Use [workflow selection](modes.md) to decide whether Goal execution is appropriate. Atomic tasks and exploratory campaigns should not manufacture orchestration merely because agents are available.
 
 For plan-backed execution, the approved implementation plan is the scope and acceptance contract. For explicitly approved goal-backed orchestration, the Goal Contract is the durable completion contract and the current implementation plan is revisable strategy beneath it.
 
-This document owns delegation boundaries, role routing, context economy, evidence sufficiency and closure, review routing, and primary-agent integration. Repository-specific validation, contracts, mutation policy, and operational procedure belong to the target repository and its adapter.
+This reference owns delegation boundaries, role routing, review routing and primary-agent integration. Context and evidence have their own linked references. Repository-specific validation, contracts, mutation policy, and operational procedure belong to the target repository and its adapter.
 
 The primary agent owns decomposition, integration, validation decisions, and the final result. It
 remains accountable for repository state and authorized mutations performed by workers.
@@ -85,7 +85,7 @@ Conversely, do not use a more expensive integration role merely because a task c
 
 Use the registered explorer for discovery, not as a mandatory prelude to implementation.
 
-Current model and effort defaults belong in `WORKFLOW_MODES.md` and registered role configuration. The configured effort is a launch default; choose a supported different effort when the assigned uncertainty and consequence warrant it, without treating a role name as a model constraint.
+Current model and effort defaults belong in [model defaults](models.md) and registered role configuration. The configured effort is a launch default; choose a supported different effort when the assigned uncertainty and consequence warrant it, without treating a role name as a model constraint.
 
 ### Complexity discipline
 
@@ -116,47 +116,9 @@ For a fresh ownership context, provide a self-contained assignment.
 
 For a continuing owner, send a delta: what changed, the exact next deliverable, new authorization or scope, and external decisions or evidence that context has not seen. Do not replay its own investigation back to it.
 
-## 6. Context economy
+## 6. Context, evidence and closure
 
-Optimize for the next useful evidence-backed decision.
-
-Consider:
-
-- rediscovery cost;
-- active-context carrying cost;
-- value of independence;
-- model capability;
-- delegation/bootstrap cost;
-- tool and validation churn;
-- maintainer attention.
-
-Apply the context-selection guidance in [WORKFLOW_MODES.md §4](WORKFLOW_MODES.md#4-context-economics), including reassessment at materially different execution phases.
-
-Reuse an active owner when it already holds expensive relevant evidence and the next step is a direct continuation.
-
-Prefer references to authoritative repository sources over pasting large copies into child prompts when those sources are directly readable.
-
-Do not send unrelated plan sections, broad conversation history, or repository history that does not affect the assignment.
-
-After delegation, let the worker own its coherent local inspect/edit/test loop. The primary reviews returned evidence and artifacts in proportion to residual risk rather than shadowing every callback.
-
-A worker's completion claim is evidence, not automatic acceptance.
-
-Do not spawn agents merely because registered roles exist.
-
-### Decision-bounded evidence and closure
-
-Across workflow modes, before another probe, identify the concrete unresolved decision, acceptance criterion, failed invariant, or material anomaly its result can resolve. Additional confidence alone is insufficient justification. Stop when evidence is sufficient for that branch; reopen it only when new evidence changes its basis.
-
-Reuse still-valid evidence while its relevant inputs and semantics remain unchanged. Later unrelated execution does not automatically invalidate earlier evidence. Refresh evidence whose validity depends on changed state or time, and follow required repository gates.
-
-Safety, fidelity, rollback, and exact-evidence requirements define what must be established; they do not create an open-ended obligation to strengthen proof after the applicable criteria are satisfied. Preserve the rigor actually required by the completion contract.
-
-Investigate unexpected anomalies in proportion to their possible effect on the decision. An explained benign delta may still warrant direct corroboration; exhaustive forensic reconstruction requires a plausible alternative explanation that could materially change the decision. Close the branch once sufficient evidence resolves it.
-
-Once the completion contract is satisfied, enter closure: record and preserve existing evidence, report the result and limitations, and perform required finalization and cleanup. Treat satisfaction of the required acceptance criteria and repository-required gates as a phase transition, not an invitation to search for further confidence. In closure, do not start new repository-wide searches, adjacent-consumer or provider traces, compatibility audits, repeated validation passes, or other probes unless a newly failed invariant, unexplained material anomaly, or genuinely missing completion criterion gives that work a concrete decision to resolve.
-
-A schema, domain-field, or compatibility change does not by itself justify tracing every downstream consumer or provider after the affected contract and identified material consumers are validated. Broaden that trace only when code evidence, a failed check, or a known dependency makes the adjacent surface material to completion.
+Apply [context economics](context.md) when choosing or continuing owners and [evidence and closure](evidence.md) when selecting checks and finalizing. Prefer readable source references to pasted histories. A worker's completion claim is evidence, not automatic acceptance; let it own its inspect/edit/test loop and verify only concrete integration uncertainties.
 
 ## 7. Role routing integrity
 
@@ -215,7 +177,7 @@ Before final handoff, the primary:
 
 Delegated validation is evidence, not a substitute for primary integration judgment.
 
-Do not broaden or repeat validation merely because delegation occurred. Apply [decision-bounded evidence and closure](#decision-bounded-evidence-and-closure) when composing validation evidence and finalizing the result.
+Do not broaden or repeat validation merely because delegation occurred. Apply [evidence and closure](evidence.md) when composing validation evidence and finalizing the result.
 
 Do not turn a manual or environment-owned check into an unsafe experiment against real data or production merely to close a checklist item.
 
