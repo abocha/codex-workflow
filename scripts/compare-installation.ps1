@@ -1,48 +1,37 @@
 [CmdletBinding()]
-param(
-    [Parameter(Mandatory = $true)]
-    [string]$TargetRepo
-)
+param([Parameter(Mandatory = $true)][string]$TargetRepo)
 
 $ErrorActionPreference = 'Stop'
 $sourceRoot = Split-Path -Parent $PSScriptRoot
 $targetRoot = [IO.Path]::GetFullPath($TargetRepo)
-if (-not (Test-Path -LiteralPath $targetRoot -PathType Container)) {
-    throw "Target repository does not exist: $targetRoot"
-}
+if (-not (Test-Path -LiteralPath $targetRoot -PathType Container)) { throw "Missing target: $targetRoot" }
 
-$files = [ordered]@{
-    'standard/WORKFLOW_MODES.md' = '.codex/WORKFLOW_MODES.md'
-    'standard/ORCHESTRATION.md' = '.codex/ORCHESTRATION.md'
-    'standard/PLANNING_HANDOFF.md' = '.codex/PLANNING_HANDOFF.md'
-    'skills/complexity-discipline/SKILL.md' = '.agents/skills/complexity-discipline/SKILL.md'
-}
+# Adapters and merged instructions deliberately have no byte-parity requirement.
 foreach ($role in Get-ChildItem -LiteralPath (Join-Path $sourceRoot '.codex/agents') -Filter '*.toml') {
-    $relative = '.codex/agents/' + $role.Name
-    $files[$relative] = $relative
-}
-
-# Adapters and merged AGENTS fragments intentionally have no parity requirement.
-# Normalize line endings only: other whitespace can carry Markdown/TOML semantics.
-foreach ($entry in $files.GetEnumerator()) {
-    $source = Join-Path $sourceRoot $entry.Key
-    $target = Join-Path $targetRoot $entry.Value
-    $status = 'missing'
+    $relative = ".codex/agents/$($role.Name)"
+    $target = Join-Path $targetRoot $relative
+    $status = 'not-installed-optional'
     if (Test-Path -LiteralPath $target -PathType Leaf) {
-        if ((Get-FileHash -LiteralPath $source).Hash -eq (Get-FileHash -LiteralPath $target).Hash) {
-            $status = 'identical'
-        } else {
-            $sourceText = [IO.File]::ReadAllText($source).Replace("`r`n", "`n")
-            $targetText = [IO.File]::ReadAllText($target).Replace("`r`n", "`n")
-            $status = if ($sourceText -ceq $targetText) { 'line-endings-only' } else { 'review-required' }
-        }
+        $sourceText = [IO.File]::ReadAllText($role.FullName).Replace("`r`n", "`n")
+        $targetText = [IO.File]::ReadAllText($target).Replace("`r`n", "`n")
+        $status = if ($sourceText -ceq $targetText) { 'identical' } else { 'review-local-adaptation' }
     }
-    [pscustomobject]@{ Path = $entry.Value; Status = $status }
+    [pscustomobject]@{ Path = $relative; Status = $status }
 }
-
-foreach ($name in @('luna_implementer.toml', 'terra_explorer.toml', 'terra_workhorse.toml', 'terra_reviewer.toml', 'sol_reviewer.toml')) {
-    $relative = ".codex/agents/$name"
-    if (Test-Path -LiteralPath (Join-Path $targetRoot $relative) -PathType Leaf) {
+foreach ($relative in @('.codex/WORKFLOW_MODES.md', '.codex/ORCHESTRATION.md', '.codex/PLANNING_HANDOFF.md', '.codex/AGENTS-delegation.md')) {
+    if (Test-Path -LiteralPath (Join-Path $targetRoot $relative)) {
+        [pscustomobject]@{ Path = $relative; Status = 'legacy-workflow-review-before-retiring' }
+    }
+}
+foreach ($name in @('luna_implementer', 'terra_explorer', 'terra_workhorse', 'terra_reviewer', 'sol_reviewer')) {
+    $relative = ".codex/agents/$name.toml"
+    if (Test-Path -LiteralPath (Join-Path $targetRoot $relative)) {
         [pscustomobject]@{ Path = $relative; Status = 'retired-role-present' }
+    }
+}
+foreach ($skill in Get-ChildItem -LiteralPath (Join-Path $sourceRoot 'skills') -Directory) {
+    $relative = ".agents/skills/$($skill.Name)/SKILL.md"
+    if (Test-Path -LiteralPath (Join-Path $targetRoot $relative)) {
+        [pscustomobject]@{ Path = $relative; Status = 'local-skill-review-for-duplicate-or-adaptation' }
     }
 }

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-workflow",
+  "version": "0.1.0",
+  "description": "Portable evidence-led engineering methods, focused review skills and project integration for ChatGPT and Codex.",
+  "author": {
+    "name": "Abocha"
+  },
+  "repository": "https://github.com/abocha/codex-workflow",
+  "keywords": [
+    "engineering",
+    "workflow",
+    "planning",
+    "testing",
+    "ci"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Codex Workflow",
+        "shortDescription": "Evidence-led engineering",
+        "longDescription": "Choose a proportionate workflow, plan and coordinate substantial changes, diagnose PR/CI failures, audit tests, maintain useful documentation and integrate these methods with each project.",
+        "developerName": "Abocha",
+        "category": "Productivity",
+        "capabilities": [],
+        "defaultPrompt": [
+          "Integrate Codex Workflow with this project.",
+          "Help me plan this change using Codex Workflow.",
+          "Diagnose this pull request failure using Codex Workflow."
+        ]
+      }
+    }
+  }
+}

@@ -4,9 +4,9 @@
 
 This document defines what interactive planning should preserve when work is ready to become coordinated Codex Goal execution.
 
-Use `WORKFLOW_MODES.md` to decide whether Goal execution is appropriate. Atomic tasks and exploratory campaigns should not manufacture implementation plans merely because several related questions exist.
+Use [workflow selection](modes.md) to decide whether Goal execution is appropriate. Atomic tasks and exploratory campaigns should not manufacture implementation plans merely because several related questions exist.
 
-This file owns the handoff contract between planning and execution. Runtime delegation, role routing, review routing, context selection, and primary-agent integration belong in `ORCHESTRATION.md`.
+This file owns the handoff contract between planning and execution. Runtime delegation, role routing, review routing, context selection, and primary-agent integration belong in [orchestration](orchestration.md).
 
 ## 1. When a handoff is ready
 
@@ -62,6 +62,10 @@ When the plan depends on a moving external premise, verify that premise from a c
 
 When planning introduces non-trivial structural complexity or decides whether to account now for a difficult-to-reverse known future constraint, apply the installed `$complexity-discipline` skill when available. Preserve its necessity-chain and reversibility reasoning rather than copying that procedure into this document.
 
+## Deeper planning without bigger scope
+
+Before committing to a substantial approach, check whether a materially missing requirement changes it, which primary evidence establishes the premises, whether the professional method fits the problem, and which independent observable result establishes success. Follow a discovered gap only when it can change the approved outcome, approach or acceptance. This is a short judgment check, not a new research phase, expert panel or mandatory artifact. Preserve uncertainty rather than inventing requirements or precision.
+
 ## 6. Implementation detail
 
 Include implementation detail when it is already known and materially useful.
@@ -72,7 +76,7 @@ Avoid procedural scripts that prescribe every edit, read, or test cycle unless t
 
 Task-specific validation belongs in the plan when it defines acceptance. Generic repository validation procedure does not.
 
-Express task-specific evidence as observable acceptance criteria: what must hold, what evidence establishes it, and what failure would require further investigation. Avoid open-ended obligations to maximize proof. Reserve terms such as "exhaustive", "exact", or "fully prove" for criteria whose required strength is actually part of the contract. Apply [ORCHESTRATION.md's decision-bounded evidence and closure rule](ORCHESTRATION.md#decision-bounded-evidence-and-closure) rather than restating it in each plan.
+Express task-specific evidence as observable acceptance criteria: what must hold, what evidence establishes it, and what failure would require further investigation. Avoid open-ended obligations to maximize proof. Reserve terms such as "exhaustive", "exact", or "fully prove" for criteria whose required strength is actually part of the contract. Apply [evidence and closure](evidence.md) rather than restating it in each plan.
 
 ## 7. Ownership boundaries
 
@@ -80,7 +84,7 @@ A substantial handoff may identify candidate coherent ownership boundaries when 
 
 These describe responsibilities such as one API contract, persistence boundary, frontend workflow, provider integration, or deployment surface. They are not mandatory child assignments.
 
-Do not encode one child per numbered task. The executing primary owns decomposition and role selection using current repository state and `ORCHESTRATION.md`.
+Do not encode one child per numbered task. The executing primary owns decomposition and role selection using current repository state and [orchestration](orchestration.md).
 
 If expensive repository discovery has already produced a useful map, the handoff may state what evidence is fresh enough to reuse and what remains uncertain.
 
@@ -90,7 +94,7 @@ Model, reasoning effort, root fresh-versus-continued context, quota consideratio
 
 Do not put launcher instructions such as `use Sol/high`, `use Astra/medium`, `start fresh`, or `continue this thread` into the implementation plan or runnable root prompt unless the executing agent itself must act on that information.
 
-Likewise, do not pre-script child or reviewer topology merely because roles exist. Record a genuine independence or ownership requirement when one is part of the task; otherwise let `ORCHESTRATION.md` govern dispatch.
+Likewise, do not pre-script child or reviewer topology merely because roles exist. Record a genuine independence or ownership requirement when one is part of the task; otherwise let [orchestration](orchestration.md) govern dispatch.
 
 For a continuing worker, communicate the delta rather than replaying context it already owns. External decisions or evidence that the worker has not seen must still be supplied when needed.
 

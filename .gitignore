@@ -8,3 +8,6 @@ evidence/
 .env
 .env.*
 !.env.example
+
+# Python validation tooling
+__pycache__/

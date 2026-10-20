@@ -30,3 +30,15 @@ jobs:
       - name: Exercise turn-scoped rollout metrics
         shell: pwsh
         run: ./scripts/test-rollout-metrics.ps1
+      - name: Exercise project integration preservation
+        shell: pwsh
+        run: ./scripts/test-project-integration.ps1
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Validate and inspect plugin archive
+        shell: pwsh
+        run: |
+          python -m pip install PyYAML==6.0.3
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/build-plugin.py --output "$env:RUNNER_TEMP/codex-workflow.zip"
