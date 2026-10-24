@@ -78,6 +78,10 @@ formulas as permanent execution rules.
 
 ## Measuring a run
 
+For qualitative research into repeated agent friction and useful workflow practices, see the
+[workflow log research lab](research/README.md). Its inventories and evidence stay local; research
+tooling is excluded from the distributable plugin.
+
 
 First find recent root tasks. `-CwdContains` is optional but useful when several repositories share the same Codex sessions directory.
 
