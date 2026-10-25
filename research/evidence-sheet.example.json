@@ -1,0 +1,25 @@
+{
+  "totals": {"files": 1, "physical_lines": 100},
+  "coverage": [
+    {
+      "file": "<exact absolute path from the private packet>",
+      "scan_ranges": [[1, 100]],
+      "read_ranges": [[15, 25]],
+      "gaps": "Other records indexed only; referenced visual attachments not inspected."
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "basis": "historical_report",
+      "limits": "The historical assistant reported a successful check; its tool result was not inspected.",
+      "references": [
+        {
+          "file": "<exact absolute path from the private packet>",
+          "sha256": "<full byte SHA-256 from the private packet>",
+          "lines": [20, 25]
+        }
+      ]
+    }
+  ]
+}

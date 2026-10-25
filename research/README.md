@@ -50,6 +50,19 @@ re-stage a changed source and preserve the old record rather than pretending it 
 
 ## Research a cohort
 
+Start with the compact record index. It includes instruction/turn-context markers, user/assistant
+messages, tool call IDs and results, and compactions. Each preview is explicitly bounded and linked
+to its exact physical line; no repeated instruction is silently deduplicated. Navigate successive
+line windows using `next_line`, then use the existing reader for detailed evidence.
+
+```powershell
+python scripts/workflow-log-lab.py navigate --path <local-jsonl-path> `
+  --start-line 1 --end-line 100 --sha256 <inventory-sha256>
+```
+
+Both CLI views write UTF-8, including when Windows redirects stdout with a legacy default encoding.
+Previews are navigation, not proof that messages, instructions or tool outputs have been read.
+
 Read assigned requests, authorization changes, visible instructions and agent responses in order.
 Build a compact episode timeline before selecting incidents. Follow tool calls and results where
 they affect a decision, and inspect the complete local sequence around every proposed finding.
@@ -100,6 +113,31 @@ Include a coverage table listing every assigned file, line ranges actually read,
 material, and outcome certainty. Report research-method problems separately from workflow findings:
 source gaps, reader friction, overly large packets, weak instructions, or duplicated work.
 
+Separate three levels of evidence in the table and claims: **scanned/indexed**, **read in detail**,
+and **supporting sequence checked**. Traversing or JSON-parsing every record establishes only the
+first level. For an observed tool outcome, read the request, relevant call/result and response as a
+sequence. If only the historical assistant's summary was read, label the claim `historical_report`;
+do not promote it to an independently observed result. Use `inference` for an interpretation and
+state its limits. `observed_sequence` describes directly inspected supporting records, not a rerun
+of the historical action or proof of current production state.
+
+Stage a private evidence sheet from [this example](evidence-sheet.example.json), using exact packet
+paths/full hashes, actual packet totals and physical ranges. Keep `scan_ranges` distinct from
+`read_ranges`; files not read in detail have an empty `read_ranges` list and explicit gaps. Reference
+only fully read ranges for material claims. Empty `claims` is valid when no finding is established.
+Before accepting a report, run:
+
+```powershell
+python scripts/workflow-log-lab.py check-report --packet <private-cohort-json> `
+  --report <private-evidence-sheet-json>
+```
+
+The command checks totals, assigned file identity, current hashes/line counts, range bounds,
+coverage omissions and whether cited ranges were declared read. It exits nonzero on failure.
+It cannot tell whether a valid-range citation names the wrong passage or supports the conclusion;
+the primary reviewer must check the strongest claims against the cited records. A structural pass
+does not verify the researcher's self-reported reading or convert scanned lines into evidence.
+
 Suggested lenses are instruction routing, scope/authorization, repeated validation, stopping,
 tool/environment friction, continuity/handoffs and reusable successful practices. These are prompts
 for discovery, not mandatory headings or evidence that a defect exists.
@@ -107,7 +145,10 @@ for discovery, not mandatory headings or evidence that a defect exists.
 An unresolved or conditional investigation stays in Linear Backlog. Conclusive research may be
 closed as research only; a proposed change is not implemented work. Researchers update only their
 own issues. Local ad hoc parsing/read commands are allowed only with no writes and no external
-access. The provided `read` command is explicitly permitted. Shared files remain read-only.
+access. The provided `navigate`, `read` and `check-report` commands are explicitly permitted.
+For new dispatches, authorize writing the evidence sheet only at one specified ignored local path;
+other shared files and source logs remain read-only. Include that exact allowance in the research
+issue and task prompt. Do not apply it retroactively to a prior task's read-only authorization.
 
 ## Synthesis and next iteration
 
@@ -115,6 +156,12 @@ Dispatch ends with accepted task mappings. A separately requested synthesis read
 checks the strongest evidence, merges duplicates across families, challenges causes and compares
 with current workflow guidance. Rank by recurrence, consequence, confidence and intervention cost;
 do not invent a composite score or infer time savings from transcript length.
+
+Recurrence is required to claim a repeated pattern, not to justify every fix. A single severe,
+well-supported defect may warrant a bounded change; weigh consequence and confidence explicitly.
+When tools or outcomes were only assistant-reported, say "no change established by this evidence"
+rather than implying absence of a problem. Do not require new per-file metadata everywhere when
+cohort-level family notes and rationale already suffice; add context only for a specific ambiguity.
 
 Distinguish historical problems already fixed, current candidate gaps, project-specific problems
 and unknown runtime limitations. Recommend at most a few changes worth trying. A later authorized
@@ -132,4 +179,5 @@ python scripts/test-workflow-log-lab.py
 ```
 
 Synthetic fixtures cover modern/legacy messages, duplicate session files, child lineage, malformed
-records, lifecycle limitations, pagination and source changes. No real private logs are test fixtures.
+records, lifecycle limitations, pagination, authority/tool navigation, Windows redirected Unicode,
+source changes, citation bounds/totals and scanned-only claims. No real private logs are fixtures.

@@ -162,6 +162,146 @@ def read_page(path, start, end, offset, chars, include_context=False, expected_s
             "text": page}
 
 
+def navigate(path, start, end, preview_chars, expected_sha=None):
+    """Bounded record index, including authority and tool records, never hidden reasoning."""
+    before = path.stat()
+    digest, rows, total = hashlib.sha256(), [], 0
+    for number, event, raw in records(path):
+        digest.update(raw)
+        total = number
+        if not start <= number <= end:
+            continue
+        if event is None:
+            rows.append({"line": number, "type": "malformed"})
+            continue
+        payload = event.get("payload", {})
+        event_type, kind = event.get("type"), payload.get("type", "")
+        if kind == "reasoning" or (event_type == "event_msg" and kind.startswith("agent_reasoning")):
+            continue
+        if event_type == "response_item":
+            if kind == "message":
+                text = "\n".join(str(part.get("text", "")) for part in payload.get("content", [])
+                                 if isinstance(part, dict))
+            elif kind == "additional_tools":
+                text = "[tool definitions; available in raw source]"
+            else:
+                text = str(payload.get("arguments", payload.get("input", payload.get("output", ""))))
+        elif event_type == "event_msg":
+            if kind not in {"user_message", "agent_message", "task_started", "task_complete",
+                            "turn_aborted", "task_aborted", "error", "warning"}:
+                continue
+            text = str(payload.get("message", ""))
+        elif event_type == "session_meta":
+            text = str(payload.get("base_instructions", "[session metadata]"))
+        elif event_type in {"turn_context", "compacted"}:
+            text = json.dumps(payload, ensure_ascii=False)
+        else:
+            continue
+        compact = " ".join(text.split())
+        rows.append({"line": number, "timestamp": event.get("timestamp"), "type": event_type,
+                     "kind": kind, "role": payload.get("role"), "name": payload.get("name"),
+                     "call_id": payload.get("call_id"), "turn_id": payload.get("turn_id"),
+                     "characters": len(text), "preview": compact[:preview_chars],
+                     "preview_truncated": len(compact) > preview_chars})
+    after = path.stat()
+    if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+        raise ValueError("Source changed during navigation")
+    if expected_sha and digest.hexdigest() != expected_sha:
+        raise ValueError("Source hash changed; re-stage evidence")
+    return {"source": str(path.resolve()), "sha256": digest.hexdigest(), "line_count": total,
+            "physical_lines": [start, end], "next_line": end + 1 if end < total else None,
+            "note": "Navigation only; previews are not detailed reading. Authority, tools and compactions remain indexed. Read exact lines with --include-context for evidence. No automatic redaction.",
+            "records": rows}
+
+
+def check_report(packet, report):
+    """Check references and declared reading coverage, not semantic support for conclusions."""
+    files = packet["files"]
+    by_path = {str(Path(row["path"]).resolve()): row for row in files}
+    errors, coverage, claim_ids = [], {}, set()
+
+    def resolve(ref):
+        key = str(Path(ref.get("file", "")).resolve())
+        if key not in by_path:
+            errors.append(f"Unknown packet file: {ref.get('file')}")
+            return None
+        return key
+
+    def ranges(value, key, label):
+        valid = []
+        if not isinstance(value, list):
+            errors.append(f"{label}: expected a list of ranges")
+            return valid
+        for pair in value:
+            if (not isinstance(pair, list) or len(pair) != 2 or
+                    any(type(n) is not int for n in pair) or
+                    not 1 <= pair[0] <= pair[1] <= by_path[key]["line_count"]):
+                errors.append(f"{label}: invalid physical line range {pair}")
+            else:
+                valid.append(pair)
+        return valid
+
+    actual_totals = {"files": len(files), "physical_lines": sum(row["line_count"] for row in files)}
+    if report.get("totals") != actual_totals:
+        errors.append(f"Incorrect packet totals; expected {actual_totals}")
+    # Pin both file identity and actual physical bounds, not only the report's assertions.
+    for key, row in by_path.items():
+        try:
+            digest, count = hashlib.sha256(), 0
+            with Path(key).open("rb") as stream:
+                for raw in stream:
+                    digest.update(raw)
+                    count += 1
+            if digest.hexdigest() != row["sha256"] or count != row["line_count"]:
+                errors.append(f"Packet source changed: {key}")
+        except OSError:
+            errors.append(f"Packet source unavailable: {key}")
+    for item in report.get("coverage", []):
+        key = resolve(item)
+        if key is None:
+            continue
+        if key in coverage:
+            errors.append(f"Duplicate coverage entry: {key}")
+        coverage[key] = ranges(item.get("read_ranges"), key, "read_ranges")
+        ranges(item.get("scan_ranges"), key, "scan_ranges")
+        if not isinstance(item.get("gaps"), str) or not item["gaps"].strip():
+            errors.append(f"Coverage must state gaps or explicitly 'none': {key}")
+    for key in by_path.keys() - coverage.keys():
+        errors.append(f"Missing coverage entry: {key}")
+
+    def was_read(key, pair):
+        cursor = pair[0]
+        for low, high in sorted(coverage.get(key, [])):
+            if low > cursor:
+                break
+            cursor = max(cursor, high + 1)
+        return cursor > pair[1]
+
+    for claim in report.get("claims", []):
+        ident = claim.get("id")
+        if not isinstance(ident, str) or not ident.strip() or ident in claim_ids:
+            errors.append("Each claim needs a unique nonempty id")
+        claim_ids.add(str(ident))
+        if claim.get("basis") not in {"observed_sequence", "historical_report", "inference"}:
+            errors.append(f"{ident}: unknown evidence basis")
+        if not isinstance(claim.get("limits"), str) or not claim["limits"].strip():
+            errors.append(f"{ident}: state evidence limits or explicitly 'none'")
+        refs = claim.get("references", [])
+        if not refs:
+            errors.append(f"{ident}: missing evidence references")
+        for ref in refs:
+            key = resolve(ref)
+            if key is None:
+                continue
+            if ref.get("sha256") != by_path[key]["sha256"]:
+                errors.append(f"{ident}: wrong or missing source hash for {key}")
+            for pair in ranges([ref.get("lines")], key, str(ident)):
+                if not was_read(key, pair):
+                    errors.append(f"{ident}: cited range was scanned only or not declared read: {pair}")
+    return {"ok": not errors, "totals": actual_totals, "errors": errors,
+            "note": "Structural checks only. Declared reading is self-reported; a human/primary reviewer must check that the cited sequence supports the claim, including tool results for observed outcomes."}
+
+
 def write_private(path, data):
     path = path.resolve()
     repo = Path(__file__).resolve().parent.parent
@@ -174,6 +314,9 @@ def write_private(path, data):
 
 
 def main():
+    # Redirected Windows stdout may otherwise use a legacy encoding and fail on real transcripts.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     index = sub.add_parser("index", help="Write private metadata; does not copy raw logs")
@@ -189,6 +332,15 @@ def main():
     read.add_argument("--chars", type=int, default=16000)
     read.add_argument("--include-context", action="store_true")
     read.add_argument("--sha256")
+    nav = sub.add_parser("navigate", help="Compact record index; includes authority and tool references")
+    nav.add_argument("--path", type=Path, required=True)
+    nav.add_argument("--start-line", type=int, default=1)
+    nav.add_argument("--end-line", type=int, default=100)
+    nav.add_argument("--preview-chars", type=int, default=180)
+    nav.add_argument("--sha256")
+    check = sub.add_parser("check-report", help="Check packet totals, citation bounds/hashes and declared coverage")
+    check.add_argument("--packet", type=Path, required=True)
+    check.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "index":
         # Date-only boundaries are explicitly UTC, independent of the host timezone.
@@ -200,6 +352,17 @@ def main():
         write_private(args.output, result)
         print(json.dumps({"sessions": len(result["sessions"]), "output": str(args.output.resolve()),
                           "compressed_skipped": len(result["compressed_not_inspected"])}))
+    elif args.command == "navigate":
+        if args.start_line < 1 or args.end_line < args.start_line or args.preview_chars < 1:
+            parser.error("Invalid navigation range or preview length")
+        print(json.dumps(navigate(args.path, args.start_line, args.end_line,
+                                  args.preview_chars, args.sha256), ensure_ascii=False))
+    elif args.command == "check-report":
+        result = check_report(json.loads(args.packet.read_text(encoding="utf-8")),
+                              json.loads(args.report.read_text(encoding="utf-8")))
+        print(json.dumps(result, ensure_ascii=False))
+        if not result["ok"]:
+            sys.exit(1)
     else:
         if args.start_line < 1 or args.end_line < args.start_line or args.offset < 0 or args.chars < 1:
             parser.error("Invalid line range or character page")
