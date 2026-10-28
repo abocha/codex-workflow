@@ -50,6 +50,12 @@ skills/methods or an overwrite of project `AGENTS.md`. Existing files are left f
 reconciliation. The former blanket `-Force` operation is removed. Role staging is optional and
 is not runtime registration; inspect current host support before using or claiming a role.
 The comparison reports legacy copies and adapted roles; it cannot prove semantic compatibility.
+
+For selective adoption of the opt-in `visual_specialist`, use the
+[activation guide](templates/visual-specialist-activation.md). Stage only that role when that is the
+requested scope, verify fresh host discovery and genuine visual input, and keep the saved plugin
+release, installed skills and project registration evidence separate. Role instructions do not
+create a separate sandbox or provision browser/computer-use tools.
 Remove a staged fragment after its useful content has been integrated, rather than preserving it
 as a competing owner. The helper never automatically deletes legacy or retired files.
 

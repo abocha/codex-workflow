@@ -9,6 +9,15 @@ Use GPT-6.1 Sol for ordinary Codex coordination and repository or integration ju
 
 The registered `bounded_implementer` uses GPT-6 Luna at xhigh effort for specified, pattern-following work. Its effort may be adjusted when the bounded task warrants it; route work that needs repository or integration judgment to Sol. The explorer, integration workhorse, and reviewers use Sol at efforts suited to their assigned risk. The role configuration holds portable launch defaults; target repositories may deliberately adapt them.
 
+Use the opt-in `visual_specialist` on GPT-6.1 Terra at medium effort for actual visual or interactive
+uncertainty: screenshots, rendered UI, reference comparison, visual QA, or browser/desktop workflows.
+Frontend source edits alone do not trigger this route. It may make a bounded UI correction only
+when explicitly assigned; Sol retains integration judgment, Luna retains specified implementation,
+and regular review follows residual code risk. This is a task-fit default, not a measured ranking.
+Confirm model access and genuine visual/tool exposure before dispatch; role configuration cannot
+grant capabilities. See [visual dispatch](orchestration.md#visual-and-interactive-work) and the
+[activation guide](../../../templates/visual-specialist-activation.md).
+
 Use Codex GPT-6 Astra selectively for difficult repository-grounded decisions, contradictory evidence, elusive bugs, or consequential design questions requiring repeated local inspection.
 
 Choose Astra effort proportionately: low or medium may fit a contained difficult assessment, while interacting-component investigations or consequential design decisions may warrant high or higher. These are operating defaults, not measured rankings or quota guarantees. Do not require a cheaper failed attempt before using Astra on an already clearly difficult problem, and do not create a mandatory Astra review layer.

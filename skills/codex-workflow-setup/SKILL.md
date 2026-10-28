@@ -42,6 +42,9 @@ still needs local execution. Never claim edits or registration from instructions
   registrations. Install/reconcile them only when useful and authorized, following the host's
   current registration mechanism. Do not overwrite adapted roles or modify user configuration
   merely because the plugin includes defaults. Report unavailable routes honestly.
+  For the opt-in `visual_specialist`, follow the
+  [activation guide](../../templates/visual-specialist-activation.md); stage only that role when
+  requested and verify actual visual/tool exposure separately from plugin installation.
 
 For an old copied installation, first preserve unique project guidance in its appropriate owner.
 Repair active links and triggers, then retire superseded portable copies within authorized scope.

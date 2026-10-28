@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "codex-workflow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Portable evidence-led engineering methods, focused review skills and project integration for ChatGPT and Codex.",
   "author": {
     "name": "Abocha"
