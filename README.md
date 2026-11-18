@@ -26,7 +26,7 @@ Creation alone does not establish installation or skill discovery in a running s
 `codex-workflow-setup` in the project to connect shared methods to its existing instructions and tools.
 See [adoption and migration](ADOPTION.md).
 
-For the opt-in GPT-6.1 Terra `visual_specialist`, follow the
+For the opt-in `visual_specialist`, follow the
 [activation guide](templates/visual-specialist-activation.md). It covers genuine visual/tool input,
 project registration, safe interaction boundaries and separate release/installation evidence.
 
@@ -60,7 +60,7 @@ python -m venv .local-evidence/validation-venv
 ./.local-evidence/validation-venv/Scripts/python.exe scripts/build-plugin.py
 pwsh ./scripts/test-project-integration.ps1
 pwsh ./scripts/test-rollout-metrics.ps1
-./.local-evidence/validation-venv/Scripts/python.exe scripts/build-plugin.py --output C:/temp/codex-workflow-0.2.0.zip
+./.local-evidence/validation-venv/Scripts/python.exe scripts/build-plugin.py --output C:/temp/codex-workflow.zip
 ```
 
 Write the archive outside the source checkout. The builder parses manifest/YAML/TOML, checks

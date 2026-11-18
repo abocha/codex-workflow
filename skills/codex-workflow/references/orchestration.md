@@ -73,7 +73,7 @@ Exploration may validly conclude that no implementation change is justified.
 
 ## 4. Implementation routing
 
-Route implementation according to the judgment and semantic coupling required by the complete deliverable, not superficial task or diff size.
+Keep implementation with the primary when it already understands the change and can verify it directly. When delegation is authorized and useful, choose a role by the judgment and coupling the deliverable requires.
 
 Use the registered bounded implementer for well-specified, coherent, pattern-following work with explicit acceptance criteria.
 
@@ -81,11 +81,11 @@ Use the registered integration/workhorse role when implementation requires subst
 
 Do not push work into a bounded implementer when it requires new architecture, security, authorization, privacy, persistent-data integrity, migration strategy, public-contract, concurrency, or production decisions beyond that role's authority.
 
-Conversely, do not use a more expensive integration role merely because a task contains many files when the complete ownership boundary is mechanically specified.
+File count alone gives little information about the integration judgment a change requires.
 
 Use the registered explorer for discovery, not as a mandatory prelude to implementation.
 
-Current model and effort defaults belong in [model defaults](models.md) and registered role configuration. The configured effort is a launch default; choose a supported different effort when the assigned uncertainty and consequence warrant it, without treating a role name as a model constraint.
+The portable roles inherit the parent's model and reasoning effort. Consult the [model guide](models.md) when a task calls for an explicit override.
 
 ### Visual and interactive work
 

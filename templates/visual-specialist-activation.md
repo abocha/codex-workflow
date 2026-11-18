@@ -5,12 +5,10 @@ Ordinary frontend work does not need an activation exercise or a mandatory visua
 
 ## Source and release
 
-The canonical [role](../.codex/agents/visual_specialist.toml) selects `gpt-6.1-terra` with medium
-reasoning effort. [Model defaults](../skills/codex-workflow/references/models.md) and
-[dispatch guidance](../skills/codex-workflow/references/orchestration.md#visual-and-interactive-work)
-own task routing. OpenAI documents the model's image input and medium effort support in the
-[model reference](https://developers.openai.com/api/docs/models/gpt-6.1-terra); account and host
-availability still need verification.
+The canonical [role](../.codex/agents/visual_specialist.toml) inherits the parent's model and effort.
+Check that the assigned agent can access the required image or browser tool. See the
+[model guide](../skills/codex-workflow/references/models.md) and
+[dispatch guidance](../skills/codex-workflow/references/orchestration.md#visual-and-interactive-work).
 
 Validate and build through the canonical repository's README recipe. The archive includes the role
 and this guide. Update the existing private plugin identity through Plugin Creator only when
