@@ -1,8 +1,6 @@
 name = "bounded_implementer"
-description = "Economical workspace-writing implementer for well-specified, pattern-following low-risk changes or bounded implementation steps with explicit acceptance criteria and targeted validation."
+description = "Workspace-writing implementer for well-specified, pattern-following low-risk changes or bounded implementation steps with explicit acceptance criteria and targeted validation."
 
-model = "gpt-6-luna"
-model_reasoning_effort = "xhigh"
 sandbox_mode = "workspace-write"
 
 developer_instructions = """

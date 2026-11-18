@@ -1,6 +1,6 @@
 ---
 name: test-audit
-description: Evaluate test value when authoring or reviewing tests, perform a scoped test audit or authorized pruning, or diagnose fixture and snapshot drift. Use independent contracts and plausible defects instead of test-count or coverage targets.
+description: Use when the choice of assertion, fixture or test boundary could hide a plausible defect, when diagnosing fixture or snapshot drift, or for a requested test audit or authorized pruning. Routine regression tests with clear expected behavior can follow project conventions directly.
 ---
 
 # Test value and fixture diagnosis
@@ -11,7 +11,9 @@ contracts, commands and protected compatibility baselines remain authoritative.
 
 ## Test-value gate
 
-Before adding, materially rewriting or recommending removal of a test, establish:
+A service can commit a ledger entry and lose its response. A retry test that checks only the final response could pass even if the service writes twice. Check the persisted entries after retrying.
+
+When deciding what evidence a test needs, establish:
 
 1. The observable behavior, invariant or independently owned contract it protects.
 2. The plausible defect that makes it fail for the intended reason.
